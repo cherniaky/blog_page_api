@@ -6,7 +6,11 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const passport = require("passport");
+const session = require("express-session");
 const localStrategy = require("passport-local").Strategy;
+const JWTstrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
+
 const bcrypt = require("bcryptjs");
 
 var indexRouter = require("./routes/index");
@@ -61,8 +65,46 @@ passport.use(
     )
 );
 
+passport.use(
+    new JWTstrategy(
+        {
+            secretOrKey: "process.env.SECRET_KEY",
+            jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        },
+        async (token, done) => {
+            try {
+                return done(null, token.user);
+            } catch (error) {
+                done(error);
+            }
+        }
+    )
+);
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
+
+
+
 var app = express();
 
+app.use(
+    session({
+        secret: "cats",
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 2,
+        },
+    })
+);
 //Set up mongoose connection
 var mongoose = require("mongoose");
 var mongoDB = process.env.MONGODB_URI || "";
@@ -79,6 +121,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api", indexRouter);
 
