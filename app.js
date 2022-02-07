@@ -26,7 +26,7 @@ passport.use(
         },
         async (username, password, done) => {
             try {
-                const user = await User.create({ username, password });
+                const user ={ username, password };
 
                 return done(null, user);
             } catch (error) {
@@ -68,7 +68,7 @@ passport.use(
 passport.use(
     new JWTstrategy(
         {
-            secretOrKey: "process.env.SECRET_KEY",
+            secretOrKey: process.env.SECRET_KEY,
             jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         },
         async (token, done) => {

@@ -12,7 +12,11 @@ const commentController = require("../controllers/commentController");
 const userController = require("../controllers/userController");
 // Posts
 
-router.get("/posts", postController.posts_get);
+router.get(
+    "/posts",
+    passport.authenticate("jwt", { session: false }),
+    postController.posts_get
+);
 
 router.post(
     "/posts",
@@ -67,10 +71,12 @@ router.delete(
 );
 
 
-// router.post("/sign-up", userController.signup);
+ router.post("/signup", userController.signup);
 
  router.post("/login", userController.login);
 
  router.get("/logout", userController.logout);
+
+ router.get("/refresh", userController.refresh);
 
 module.exports = router;
