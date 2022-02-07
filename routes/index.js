@@ -14,7 +14,7 @@ const userController = require("../controllers/userController");
 
 router.get(
     "/posts",
-    passport.authenticate("jwt", { session: false }),
+    //passport.authenticate("jwt", { session: false }),
     postController.posts_get
 );
 
