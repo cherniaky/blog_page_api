@@ -11,6 +11,8 @@ const localStrategy = require("passport-local").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const cors = require("cors");
+const helmet = require("helmet")
+var compression = require("compression");
 
 const bcrypt = require("bcryptjs");
 
@@ -18,53 +20,53 @@ var indexRouter = require("./routes/index");
 
 const User = require("./models/user");
 
-passport.use(
-    "signup",
-    new localStrategy(
-        {
-            usernameField: "username",
-            passwordField: "password",
-        },
-        async (username, password, done) => {
-            try {
-                const user ={ username, password };
+// passport.use(
+//     "signup",
+//     new localStrategy(
+//         {
+//             usernameField: "username",
+//             passwordField: "password",
+//         },
+//         async (username, password, done) => {
+//             try {
+//                 const user ={ username, password };
 
-                return done(null, user);
-            } catch (error) {
-                done(error);
-            }
-        }
-    )
-);
+//                 return done(null, user);
+//             } catch (error) {
+//                 done(error);
+//             }
+//         }
+//     )
+// );
 
-passport.use(
-    "login",
-    new localStrategy(
-        {
-            usernameField: "username",
-            passwordField: "password",
-        },
-        async (username, password, done) => {
-            try {
-                const user = await User.findOne({ username });
+// passport.use(
+//     "login",
+//     new localStrategy(
+//         {
+//             usernameField: "username",
+//             passwordField: "password",
+//         },
+//         async (username, password, done) => {
+//             try {
+//                 const user = await User.findOne({ username });
 
-                if (!user) {
-                    return done(null, false, { message: "User not found" });
-                }
+//                 if (!user) {
+//                     return done(null, false, { message: "User not found" });
+//                 }
 
-                const validate = password === user.password;
+//                 const validate = password === user.password;
 
-                if (!validate) {
-                    return done(null, false, { message: "Wrong Password" });
-                }
+//                 if (!validate) {
+//                     return done(null, false, { message: "Wrong Password" });
+//                 }
 
-                return done(null, user, { message: "Logged in Successfully" });
-            } catch (error) {
-                return done(error);
-            }
-        }
-    )
-);
+//                 return done(null, user, { message: "Logged in Successfully" });
+//             } catch (error) {
+//                 return done(error);
+//             }
+//         }
+//     )
+// );
 
 passport.use(
     new JWTstrategy(
@@ -92,8 +94,6 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-
-
 var app = express();
 
 app.use(
@@ -117,16 +117,19 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(helmet())
 app.use(
     cors({
         credentials: true,
         origin: "http://localhost:3000",
     })
 );
+app.use(compression());
+
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());

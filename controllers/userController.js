@@ -86,7 +86,7 @@ exports.login = async (req, res, next) => {
     try {
         const body = { _id: user._id, username: user.username };
 
-        const accsessToken = jwt.sign({ user: body }, process.env.SECRET_KEY, {
+        const accessToken = jwt.sign({ user: body }, process.env.SECRET_KEY, {
             expiresIn: "15m",
         });
         const refreshToken = jwt.sign(
@@ -103,7 +103,7 @@ exports.login = async (req, res, next) => {
             maxAge: 15 * 24 * 60 * 60 * 1000,
             httpOnly: true,
         });
-        return res.json({ accsessToken, refreshToken, user: body });
+        return res.json({ accessToken, refreshToken, user: body });
     } catch (error) {
         return next(error);
     }
@@ -142,7 +142,7 @@ exports.refresh = async function (req, res, next) {
         username: user.username,
     };
 
-    const accsessToken = jwt.sign({ user: userData }, process.env.SECRET_KEY, {
+    const accessToken = jwt.sign({ user: userData }, process.env.SECRET_KEY, {
         expiresIn: "15m",
     });
     const newRefreshToken = jwt.sign(
@@ -160,7 +160,7 @@ exports.refresh = async function (req, res, next) {
         httpOnly: true,
     });
     return res.json({
-        accsessToken,
+        accessToken,
         refreshToken: newRefreshToken,
         user: userData,
     });
