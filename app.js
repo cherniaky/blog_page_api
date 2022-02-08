@@ -10,6 +10,7 @@ const session = require("express-session");
 const localStrategy = require("passport-local").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
+const cors = require("cors");
 
 const bcrypt = require("bcryptjs");
 
@@ -120,6 +121,12 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+    cors({
+        credentials: true,
+        origin: "*",
+    })
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());
