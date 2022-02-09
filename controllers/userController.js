@@ -81,9 +81,9 @@ exports.login = async (req, res, next) => {
     //req.body.password === user.password;
 
     if (!validate) {
-         return res.status(400).send("Wrong Password");
+        return res.status(400).send("Wrong Password");
     }
-            
+
     try {
         const body = { _id: user._id, username: user.username };
 
@@ -103,7 +103,9 @@ exports.login = async (req, res, next) => {
         res.cookie("refreshToken", refreshToken, {
             maxAge: 15 * 24 * 60 * 60 * 1000,
             httpOnly: true,
+            sameSite: false,
         });
+
         return res.json({ accessToken, refreshToken, user: body });
     } catch (error) {
         return next(error);
@@ -124,18 +126,18 @@ exports.logout = async function (req, res) {
 
 exports.refresh = async function (req, res, next) {
     const { refreshToken } = req.cookies;
-   // console.log(refreshToken)
+    // console.log(refreshToken)
     if (!refreshToken) {
-         return res.status(404).send("No refresh token");
+        return res.status(404).send("No refresh token");
         return next(new Error("No refresh token"));
     }
 
     const tokenData = jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH);
     //console.log(tokenData.user);
     const dbToken = await Token.findOne({ token: refreshToken });
-   // console.log(dbToken , tokenData.user);
+    // console.log(dbToken , tokenData.user);
     if (!dbToken || !tokenData.user) {
-         return res.status(404).send("No token in database or token invalid");
+        return res.status(404).send("No token in database or token invalid");
         return next(new Error("No token in database or token invalid"));
     }
     const user = await User.findById(tokenData.user._id);
@@ -161,9 +163,10 @@ exports.refresh = async function (req, res, next) {
     res.cookie("refreshToken", newRefreshToken, {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
+        sameSite: true,
     });
 
-   // console.log(accessToken , newRefreshToken , userData);
+    // console.log(accessToken , newRefreshToken , userData);
     return res.json({
         accessToken,
         refreshToken: newRefreshToken,
