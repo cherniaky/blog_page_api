@@ -163,7 +163,7 @@ exports.refresh = async function (req, res, next) {
     res.cookie("refreshToken", newRefreshToken, {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        sameSite: true,
+        sameSite: false,
     });
 
     // console.log(accessToken , newRefreshToken , userData);
