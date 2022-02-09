@@ -24,7 +24,7 @@ const Authmidd = function (req, res, next) {
 
         const accessToken = authorizationHeader.split(" ")[1];
 
-        console.log(accessToken);
+        //console.log(accessToken);
         if (!accessToken) {
             return res.status(402).send("Autorization");
         }
