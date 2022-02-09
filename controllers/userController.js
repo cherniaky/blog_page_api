@@ -70,19 +70,20 @@ exports.signup = [
 ];
 
 exports.login = async (req, res, next) => {
+    //console.log(req.body.username);
     const user = await User.findOne({ username: req.body.username });
 
     if (!user) {
-        return next(new Error("User not found"));
+        return res.status(404).send("User not found!");
     }
 
     const validate = bcrypt.compareSync(req.body.password, user.password);
     //req.body.password === user.password;
 
     if (!validate) {
-        return next(new Error("Wrong Password"));
+         return res.status(400).send("Wrong Password");
     }
-
+            
     try {
         const body = { _id: user._id, username: user.username };
 
@@ -123,16 +124,18 @@ exports.logout = async function (req, res) {
 
 exports.refresh = async function (req, res, next) {
     const { refreshToken } = req.cookies;
-
+   // console.log(refreshToken)
     if (!refreshToken) {
+         return res.status(404).send("No refresh token");
         return next(new Error("No refresh token"));
     }
 
     const tokenData = jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH);
     //console.log(tokenData.user);
     const dbToken = await Token.findOne({ token: refreshToken });
-
+   // console.log(dbToken , tokenData.user);
     if (!dbToken || !tokenData.user) {
+         return res.status(404).send("No token in database or token invalid");
         return next(new Error("No token in database or token invalid"));
     }
     const user = await User.findById(tokenData.user._id);
@@ -159,6 +162,8 @@ exports.refresh = async function (req, res, next) {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
     });
+
+   // console.log(accessToken , newRefreshToken , userData);
     return res.json({
         accessToken,
         refreshToken: newRefreshToken,

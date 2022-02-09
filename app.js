@@ -11,7 +11,7 @@ const localStrategy = require("passport-local").Strategy;
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
 const cors = require("cors");
-const helmet = require("helmet")
+const helmet = require("helmet");
 var compression = require("compression");
 
 const bcrypt = require("bcryptjs");
@@ -84,15 +84,15 @@ passport.use(
     )
 );
 
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
+// passport.serializeUser(function (user, done) {
+//     done(null, user.id);
+// });
 
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
-});
+// passport.deserializeUser(function (id, done) {
+//     User.findById(id, function (err, user) {
+//         done(err, user);
+//     });
+// });
 
 var app = express();
 
@@ -117,13 +117,25 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-app.use(helmet())
-app.use(
-    cors({
-        credentials: true,
-        origin: "http://localhost:3000",
-    })
-);
+app.use(helmet());
+var whitelist = [
+    "http://localhost:3000",
+    "http://127.0.0.1:5500",
+    "http://localhost:4000",
+];
+var corsOptions = {
+    origin: //true,
+     function (origin, callback) {
+      //  console.log(origin);
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },   
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(compression());
 
 app.use(logger("dev"));
@@ -132,7 +144,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 app.use("/api", indexRouter);
 
