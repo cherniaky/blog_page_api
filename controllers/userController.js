@@ -101,7 +101,7 @@ exports.login = async (req, res, next) => {
         await saveToken(user._id, refreshToken);
 
         res.setHeader("set-cookie", [
-            `refreshToken=${refreshToken}; Max-Age=1296000; Path=/;  HttpOnly;SameSite=None;Secure `,
+            `refreshToken=${refreshToken}; Max-Age=1296000; Path=/; SameSite=None;Secure `,
         ]);
         // res.cookie("refreshToken", refreshToken, {
         //     maxAge: 15 * 24 * 60 * 60 * 1000,
@@ -162,7 +162,7 @@ exports.refresh = async function (req, res, next) {
     await saveToken(userData._id, newRefreshToken);
 
     res.setHeader("set-cookie", [
-        `refreshToken=${newRefreshToken}; Max-Age=1296000; Path=/;  HttpOnly;SameSite=None;Secure `,
+        `refreshToken=${newRefreshToken}; Max-Age=1296000; Path=/;  SameSite=None;Secure `,
     ]);
     // res.cookie("refreshToken", newRefreshToken, {
     //     maxAge: 15 * 24 * 60 * 60 * 1000,
