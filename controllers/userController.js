@@ -100,11 +100,14 @@ exports.login = async (req, res, next) => {
 
         await saveToken(user._id, refreshToken);
 
-        res.cookie("refreshToken", refreshToken, {
-            maxAge: 15 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: false,
-        });
+        res.setHeader("set-cookie", [
+            `refreshToken=${refreshToken}; Max-Age=1296000; Path=/;  HttpOnly;SameSite=None;Secure `,
+        ]);
+        // res.cookie("refreshToken", refreshToken, {
+        //     maxAge: 15 * 24 * 60 * 60 * 1000,
+        //     httpOnly: true,
+        //     // sameSite: "none",
+        // });
 
         return res.json({ accessToken, refreshToken, user: body });
     } catch (error) {
@@ -129,16 +132,14 @@ exports.refresh = async function (req, res, next) {
     // console.log(refreshToken)
     if (!refreshToken) {
         return res.status(404).send("No refresh token");
-        return next(new Error("No refresh token"));
     }
 
     const tokenData = jwt.verify(refreshToken, process.env.SECRET_KEY_REFRESH);
     //console.log(tokenData.user);
     const dbToken = await Token.findOne({ token: refreshToken });
     // console.log(dbToken , tokenData.user);
-    if (!dbToken || !tokenData.user) {
-        return res.status(404).send("No token in database or token invalid");
-        return next(new Error("No token in database or token invalid"));
+    if (!tokenData.user || dbToken) {
+        return res.status(404).send("No token in database or token invalid"); 
     }
     const user = await User.findById(tokenData.user._id);
 
@@ -160,11 +161,15 @@ exports.refresh = async function (req, res, next) {
 
     await saveToken(userData._id, newRefreshToken);
 
-    res.cookie("refreshToken", newRefreshToken, {
-        maxAge: 15 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        sameSite: false,
-    });
+    res.setHeader("set-cookie", [
+        `refreshToken=${newRefreshToken}; Max-Age=1296000; Path=/;  HttpOnly;SameSite=None;Secure `,
+    ]);
+    // res.cookie("refreshToken", newRefreshToken, {
+    //     maxAge: 15 * 24 * 60 * 60 * 1000,
+    //     httpOnly: true,
+    //     // sameSite: "none",
+    //     //secure: true,
+    // });
 
     // console.log(accessToken , newRefreshToken , userData);
     return res.json({
