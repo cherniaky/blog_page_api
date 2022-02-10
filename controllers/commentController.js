@@ -21,7 +21,7 @@ exports.create_comment = [
         }
         const { text, user } = req.body;
         const postId = req.params.postid;
-        const comment = new Comment({ text, user, postId });
+        const comment = new Comment({ text, user, postId, date: Date.now() });
         let post = await Post.findById(postId);
         // console.log(post);
 
@@ -96,12 +96,10 @@ exports.delete_post_comments = async function (req, res, next) {
 
         post = await post.save();
 
-        if (!comments ) {
-            return res
-                .status(404)
-                .json({
-                    err: `Comments with post id ${req.params.postid} not found`,
-                });
+        if (!comments) {
+            return res.status(404).json({
+                err: `Comments with post id ${req.params.postid} not found`,
+            });
         }
         res.status(200).json({
             msg: `Comments with post id  ${req.params.postid} deleted sucessfuly`,
