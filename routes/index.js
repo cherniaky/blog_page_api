@@ -46,7 +46,7 @@ const Authmidd = function (req, res, next) {
     }
 };
 
-router.get("/posts", Authmidd, postController.posts_get);
+router.get("/posts", postController.posts_get);
 
 router.post("/posts", Authmidd, postController.create_post);
 
