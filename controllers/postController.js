@@ -15,10 +15,9 @@ exports.posts_get = function (req, res, next) {
     // res.json({ title: "posts" });
 };
 
-
 exports.create_post = [
-    body("author", "Empty name").trim().escape(),
-    body("title", "text").trim().escape(),
+    body("title").trim().escape(),
+    body("text").trim().escape(),
 
     function (req, res, next) {
         const errors = validationResult(req);
@@ -30,12 +29,13 @@ exports.create_post = [
             return;
         }
         // title, date - default to created time, author, published - default to false
-        const { author, title, text } = req.body;
+        const { title, text } = req.body;
+        const author = req.user.username;
         const post = new Post({
             author,
             title,
             text,
-           date: Date.now(),
+            date: Date.now(),
         });
         post.save((err) => {
             if (err) {
@@ -60,7 +60,7 @@ exports.get_single_post = async function (req, res, next) {
     }
 };
 
-exports.update_post = async function (req, res , next) {
+exports.update_post = async function (req, res, next) {
     try {
         let post = await Post.findById(req.params.id);
         post.title = req.body.title;
@@ -75,7 +75,7 @@ exports.update_post = async function (req, res , next) {
     } catch (err) {
         next(err);
     }
-}
+};
 
 exports.delete_post = async function (req, res, next) {
     try {
