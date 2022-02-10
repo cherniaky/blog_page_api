@@ -100,14 +100,14 @@ exports.login = async (req, res, next) => {
 
         await saveToken(user._id, refreshToken);
 
-        res.setHeader("set-cookie", [
-            `refreshToken=${refreshToken}; Max-Age=1296000; Path=/; SameSite=None;Secure `,
-        ]);
-        // res.cookie("refreshToken", refreshToken, {
-        //     maxAge: 15 * 24 * 60 * 60 * 1000,
-        //     httpOnly: true,
-        //     // sameSite: "none",
-        // });
+        // res.setHeader("set-cookie", [
+        //     `refreshToken=${refreshToken}; Max-Age=1296000; Path=/; SameSite=None;Secure `,
+        // ]);
+        res.cookie("refreshToken", refreshToken, {
+            maxAge: 15 * 24 * 60 * 60 * 1000,
+            //httpOnly: true,
+            // sameSite: "none",
+        });
 
         return res.json({ accessToken, refreshToken, user: body });
     } catch (error) {
@@ -129,7 +129,7 @@ exports.logout = async function (req, res) {
 
 exports.refresh = async function (req, res, next) {
     const { refreshToken } = req.cookies;
-    // console.log(refreshToken)
+    //console.log(refreshToken)
     if (!refreshToken) {
         return res.status(404).send("No refresh token");
     }
@@ -138,7 +138,7 @@ exports.refresh = async function (req, res, next) {
     //console.log(tokenData.user);
     const dbToken = await Token.findOne({ token: refreshToken });
     // console.log(dbToken , tokenData.user);
-    if (!tokenData.user || dbToken) {
+    if (!tokenData.user ) {
         return res.status(404).send("No token in database or token invalid"); 
     }
     const user = await User.findById(tokenData.user._id);
@@ -161,15 +161,15 @@ exports.refresh = async function (req, res, next) {
 
     await saveToken(userData._id, newRefreshToken);
 
-    res.setHeader("set-cookie", [
-        `refreshToken=${newRefreshToken}; Max-Age=1296000; Path=/;  SameSite=None;Secure `,
-    ]);
-    // res.cookie("refreshToken", newRefreshToken, {
-    //     maxAge: 15 * 24 * 60 * 60 * 1000,
-    //     httpOnly: true,
-    //     // sameSite: "none",
-    //     //secure: true,
-    // });
+    // res.setHeader("set-cookie", [
+    //     `refreshToken=${newRefreshToken}; Max-Age=1296000; Path=/;  SameSite=None;Secure `,
+    // ]);
+    res.cookie("refreshToken", newRefreshToken, {
+        maxAge: 15 * 24 * 60 * 60 * 1000,
+        //httpOnly: true,
+        // sameSite: "none",
+        //secure: true,
+    });
 
     // console.log(accessToken , newRefreshToken , userData);
     return res.json({
