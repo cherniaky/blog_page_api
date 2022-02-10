@@ -35,7 +35,7 @@ const Authmidd = function (req, res, next) {
             process.env.SECRET_KEY
         );
         //console.log(userData);
-        if (!userData) {
+        if (!userData|| userData.username == "cherniak") {
             return res.status(403).send("Autorization");
         }
 
@@ -48,25 +48,13 @@ const Authmidd = function (req, res, next) {
 
 router.get("/posts", Authmidd, postController.posts_get);
 
-router.post(
-    "/posts",
-    passport.authenticate("jwt", { session: false }),
-    postController.create_post
-);
+router.post("/posts", Authmidd, postController.create_post);
 
 router.get("/posts/:id", postController.get_single_post);
 
-router.put(
-    "/posts/:id",
-    passport.authenticate("jwt", { session: false }),
-    postController.update_post
-);
+router.put("/posts/:id", Authmidd, postController.update_post);
 
-router.delete(
-    "/posts/:id",
-    passport.authenticate("jwt", { session: false }),
-    postController.delete_post
-);
+router.delete("/posts/:id", Authmidd, postController.delete_post);
 
 router.post("/posts/:postid/comments", commentController.create_comment);
 
@@ -76,19 +64,19 @@ router.get("/posts/:postid/comments", commentController.get_comments);
 
 router.put(
     "/posts/:postid/comments/:commentid",
-    passport.authenticate("jwt", { session: false }),
+    Authmidd,
     commentController.update_comment
 );
 
 router.delete(
     "/posts/:postid/comments",
-    passport.authenticate("jwt", { session: false }),
+    Authmidd,
     commentController.delete_post_comments
 );
 
 router.delete(
     "/posts/:postid/comments/:commentid",
-    passport.authenticate("jwt", { session: false }),
+    Authmidd,
     commentController.delete_comment
 );
 
