@@ -52,7 +52,10 @@ router.post("/posts", Authmidd, postController.create_post);
 
 router.get("/posts/:id", postController.get_single_post);
 
+
 router.put("/posts/:id", Authmidd, postController.update_post);
+
+router.post("/posts/:id", Authmidd, postController.togglePostPublish);
 
 router.delete("/posts/:id", Authmidd, postController.delete_post);
 

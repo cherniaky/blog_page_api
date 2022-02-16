@@ -76,6 +76,21 @@ exports.update_post = async function (req, res, next) {
         next(err);
     }
 };
+exports.togglePostPublish = async function (req, res, next) {
+    try {
+        let post = await Post.findById(req.params.id);
+        post.published = !post.published;
+       
+        //post.description = req.body.description;
+        post = await post.save();
+        if (!post) {
+            return res.status(404).json({ msg: "toggled failed" });
+        }
+        res.status(200).json({ msg: "toggled sucessfuly" });
+    } catch (err) {
+        next(err);
+    }
+};
 
 exports.delete_post = async function (req, res, next) {
     try {
