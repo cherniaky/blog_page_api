@@ -124,6 +124,7 @@ var whitelist = [
     "http://127.0.0.1:5500",
     "http://localhost:4000",
     "https://web.postman.co",
+    "https://cherniakyura.github.io",
 ];
 var corsOptions = {
     origin: //true,
