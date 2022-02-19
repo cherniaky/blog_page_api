@@ -1,6 +1,6 @@
 # My Blog (API)
 
-<p><a href="https://cherniakyura.github.io/blog_page_client/" target="_blank" rel="noopener noreferrer">View the project here!</a> 👀</p>
+<p><a href="https://cherniakyura.github.io/blog_page_cms/" target="_blank" rel="noopener noreferrer">View the project here!</a> 👀</p>
 
 <p>Blog Client repo - <a href="https://github.com/CherniakYura/blog_page_client" target="_blank" rel="noopener noreferrer">click here!</a></p>
 
